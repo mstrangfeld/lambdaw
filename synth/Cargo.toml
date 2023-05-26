@@ -9,3 +9,6 @@ edition = "2021"
 anyhow = "1.0.71"
 cpal = "0.15.2"
 clap = "4.3.0"
+fundsp = {git = "https://github.com/SamiPerttu/fundsp", branch = "master"}
+egui = "0.22.0"
+eframe = "0.22.0"
