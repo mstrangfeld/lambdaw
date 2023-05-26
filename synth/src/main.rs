@@ -2,6 +2,8 @@
 Good starting point for integration of cpal into your application.
 */
 
+mod oscillators;
+
 extern crate anyhow;
 extern crate clap;
 extern crate cpal;
@@ -11,6 +13,7 @@ use cpal::{
     SizedSample,
 };
 use cpal::{FromSample, Sample};
+use oscillators::SampleRequestOptions;
 
 fn main() -> anyhow::Result<()> {
     let stream = stream_setup_for(sample_next)?;
@@ -22,26 +25,9 @@ fn main() -> anyhow::Result<()> {
 fn sample_next(o: &mut SampleRequestOptions) -> f32 {
     o.tick();
     // o.tone(440.) * 0.1 + o.tone(880.) * 0.1
-    o.sawtooth(440.) * 0.1 + o.tone(550.) * 0.1
+    // o.sawtooth(440.) * 0.1 + o.tone(550.) * 0.1
+    o.square(220.) * 0.1 - o.tone(440.) * 0.1 + o.sawtooth(550.) * 0.1
     // combination of several tones
-}
-
-pub struct SampleRequestOptions {
-    pub sample_rate: f32,
-    pub sample_clock: f32,
-    pub nchannels: usize,
-}
-
-impl SampleRequestOptions {
-    fn tone(&self, freq: f32) -> f32 {
-        (self.sample_clock * freq * 2.0 * std::f32::consts::PI / self.sample_rate).sin()
-    }
-    fn sawtooth(&self, freq: f32) -> f32 {
-        (self.sample_clock * freq / self.sample_rate) % 1.0
-    }
-    fn tick(&mut self) {
-        self.sample_clock = (self.sample_clock + 1.0) % self.sample_rate;
-    }
 }
 
 pub fn stream_setup_for<F>(on_sample: F) -> Result<cpal::Stream, anyhow::Error>
